@@ -27,6 +27,10 @@ get '/status' do
   "Remaining hits today: #{JSON.parse(status)['remaining_hits']}"
 end
 
+get '/favicon.ico' do
+  status 404
+end
+
 get '/:user' do
   user = params[:user]
   begin
