@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Headhunter — giving Twitter avatars a permanent URL</title>
+    <style type="text/css">
+      blockquote { border-left:5px solid #888; padding-left:20px; margin: 10px 20px;}
+      blockquote + p { margin-left:100px; }
+      body { padding:0; font-family:Georgia,Palatino,'Palatino Linotype',Times,'Times New Roman',serif;}
+      h1,h2.claim { font-size:4.4em; margin:15px 0; font-weight:normal; color:#1e90ff; }
+      h2.claim:before { content: ' — '; }
+      h2.claim { display:inline; }
+      pre { font-size:1.1em; }
+      .header { float:left; width:500px }
+      .section { margin-left:550px; margin-top:10px; padding-top:25px; max-width:500px; }
+      .remaining { font-weight:bold; font-size:1.2em; }
+      .by { font-style:italic; padding-left:40px; }
+      #meter { margin-top:-10px; }
+      .green { padding:0 2px; background-color:#0f0; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Headhunter</h1>
+      <h2 class="claim">giving Twitter avatars&nbsp;a permanent URL</h2>
+      <span class="by"><a href="http://twitter.com/awendt">by @awendt</a></span>
+      <blockquote cite="#remysharp">
+        <p>If you've built an app that caches a Twitter user's avatar,<br/>
+          and that user changes their avatar […], the link breaks, thus breaking your app.</p>
+      </blockquote>
+      <p>
+        — <cite id="remysharp"><a href="http://remysharp.com/2009/06/02/twivatar-a-twitter-avatar-api/">Remy Sharp</a></cite>,
+        creator of <a href="http://github.com/remy/twivatar">Twivatar</a>
+      </p>
+    </div>
+    <div class="section">
+    <h2>Usage</h2>
+    <pre>&lt;img src="http://headhunter.heroku.com/[twitter_username]" /&gt;</pre>
+    <p>
+      This <a href="http://github.com/awendt/headhunter">project</a>
+      is a <a href="http://www.sinatrarb.com/">Sinatra</a> port of Twivatar and is running on
+      <a href="http://www.heroku.com">Heroku</a>.<br/>
+      If this site breaks, you can deploy your own copy there in no time.
+    </p>
+    <h2>Statistics</h2>
+    <p id="stats">
+      <span class="remaining hits"><%= @remaining_hits %></span> hits on the Twitter API remaining
+      for the next <span class="remaining time"><%= @reset_in_minutes %></span> minutes before the counter is reset to <%= @reset_to %>.
+    <p>
+    <img id="meter" src="<%= google_chart %>" />
+    <p>
+      <span class="green">Green</span> indicates that the remaining API hits are roughly enough
+      to get us through the next hour.
+    </p>
+    <p>
+      Meter courtesy of
+      <a href="http://code.google.com/intl/de-DE/apis/charttools/index.html">Google Chart Tools</a>
+    </p>
+    </div>
+  </body>
+</html>
