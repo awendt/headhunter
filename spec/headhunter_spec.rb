@@ -25,7 +25,8 @@ describe "Headhunter" do
         :remaining_hits => "123",
         :hourly_limit => "150"
       }.to_json)
-      Time.should_receive(:now).and_return(now = mock('now', :to_i => 1269200000))
+      Time.should_receive(:now).any_number_of_times.and_return(
+        now = mock('now', :to_i => 1269200000).as_null_object)
       get '/'
       last_response.body.should =~ /123/
       last_response.body.should =~ /reset to 150/
