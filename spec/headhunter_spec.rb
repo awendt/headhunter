@@ -131,6 +131,14 @@ describe "Headhunter" do
         last_response.should be_redirect
         last_response.headers['Location'].should == 'avatar_url'
       end
+
+      it "should not cache the default avatar" do
+        Net::HTTP.should_receive(:get).and_return({:profile_image_url => DEFAULT_AVATAR}.to_json)
+        CACHE.should_not_receive(:set)
+
+        get '/awendt'
+      end
+
     end
   end
 end
