@@ -79,8 +79,7 @@ describe "Headhunter" do
       describe "but it expired" do
 
         before do
-          expired = mock('HEAD response for expired', :code => '404')
-          @mock_http.should_receive(:request_head).with('cached_avatar_url').and_return(expired)
+          @mock_head_response.should_receive(:code).and_return('404')
           Net::HTTP.stub!(:get).and_return({:profile_image_url => 'avatar_url'}.to_json)
         end
 
