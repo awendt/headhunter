@@ -16,9 +16,10 @@ describe "Headhunter" do
     class Object ; remove_const :CACHE if const_defined?(:CACHE) ; end
   end
 
-  it "should not respond to /favicon.ico" do
+  it "should not respond to /favicon.ico and cache for a week" do
     get '/favicon.ico'
     last_response.should be_not_found
+    last_response.headers['Cache-Control'].should =~ /max-age=604800$/
   end
 
   describe "Homepage" do
@@ -42,6 +43,10 @@ describe "Headhunter" do
       last_response.body.should =~ /10[^0-9]+minutes/
     end
 
+    it "should cache for 3 minutes" do
+      get '/'
+      last_response.headers['Cache-Control'].should =~ /max-age=180$/
+    end
   end
 
   describe "serving user avatars" do
@@ -60,20 +65,32 @@ describe "Headhunter" do
         @mock_http.stub!(:request_head).and_return(@mock_head_response)
       end
 
-      it "should check the cached avatar with a HEAD request" do
-        @mock_head_response.should_receive(:code).and_return('200')
-        @mock_http.should_receive(:request_head).with('cached_avatar_url').and_return(
-          @mock_head_response)
+      describe "and it is not yet expired" do
 
-        get '/awendt'
-      end
+        before do
+          @mock_head_response.should_receive(:code).and_return('200')
+        end
 
-      it "should redirect" do
-        @mock_head_response.should_receive(:code).and_return('200')
-        get '/awendt'
+        it "should check the cached avatar with a HEAD request" do
+          @mock_http.should_receive(:request_head).with('cached_avatar_url').and_return(
+            @mock_head_response)
 
-        last_response.should be_redirect
-        last_response.headers['Location'].should == 'cached_avatar_url'
+          get '/awendt'
+        end
+
+        it "should redirect" do
+          get '/awendt'
+
+          last_response.should be_redirect
+          last_response.headers['Location'].should == 'cached_avatar_url'
+        end
+
+        it "should instruct the client to cache for 5 minutes" do
+          get '/awendt'
+
+          last_response.headers['Cache-Control'].should =~ /max-age=300$/
+        end
+
       end
 
       describe "but it expired" do
@@ -100,6 +117,12 @@ describe "Headhunter" do
 
           last_response.should be_redirect
           last_response.headers['Location'].should == 'avatar_url'
+        end
+
+        it "should instruct the client to cache for 5 minutes" do
+          get '/awendt'
+
+          last_response.headers['Cache-Control'].should =~ /max-age=300$/
         end
 
       end

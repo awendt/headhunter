@@ -28,13 +28,19 @@ helpers do
       "chco=FF0000,FF8040,FFFF00,00FF00,00FFFF,0000FF,800080", "chxt=x,y",
       "chxl=0:||1:|low|normal|plenty"].join("&")
   end
+
+  def cache_for(time)
+    response['Cache-Control'] = "public, max-age=#{time.to_i}"
+  end
 end
 
 get '/favicon.ico' do
+  cache_for 7*24*60*60
   status 404
 end
 
 get '/:user' do
+  cache_for 5*60
   user = params[:user]
   begin
     avatar_url = CACHE.get(user)
@@ -47,6 +53,7 @@ get '/:user' do
 end
 
 get '/' do
+  cache_for 3*60
   status_json = Net::HTTP.get(URI.parse("http://api.twitter.com/1/account/rate_limit_status.json"))
   status = JSON.parse(status_json)
   @remaining_hits = status['remaining_hits'].to_i
