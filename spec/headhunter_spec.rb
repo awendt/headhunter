@@ -30,11 +30,11 @@ describe "Headhunter" do
     end
 
     it "should show the remaining hits allowed by the Twitter API" do
-      Net::HTTP.should_receive(:get).and_return({
-        :reset_time_in_seconds => "1269200600",
-        :remaining_hits => "123",
-        :hourly_limit => "150"
-      }.to_json)
+      Twitter.should_receive(:get).and_return({
+        "reset_time_in_seconds" => "1269200600",
+        "remaining_hits" => "123",
+        "hourly_limit" => "150"
+      })
       Time.should_receive(:now).any_number_of_times.and_return(
         now = mock('now', :to_i => 1269200000).as_null_object)
       get '/'
@@ -59,10 +59,8 @@ describe "Headhunter" do
 
       before do
         CACHE.stub!(:get).with('awendt').and_return("cached_avatar_url")
-        @mock_http = mock('http')
-        @mock_head_response = mock('response')
-        Net::HTTP.should_receive(:new).and_return(@mock_http)
-        @mock_http.stub!(:request_head).and_return(@mock_head_response)
+        @mock_head_response = mock(HTTParty::Response)
+        Twitter.stub!(:head).and_return(@mock_head_response)
       end
 
       describe "and it is not yet expired" do
@@ -72,8 +70,7 @@ describe "Headhunter" do
         end
 
         it "should check the cached avatar with a HEAD request" do
-          @mock_http.should_receive(:request_head).with('cached_avatar_url').and_return(
-            @mock_head_response)
+          Twitter.should_receive(:head).with('cached_avatar_url').and_return(@mock_head_response)
 
           get '/awendt'
         end
@@ -97,17 +94,17 @@ describe "Headhunter" do
 
         before do
           @mock_head_response.should_receive(:code).and_return('404')
-          Net::HTTP.stub!(:get).and_return({:profile_image_url => 'avatar_url'}.to_json)
+          Twitter.stub!(:get).and_return({"profile_image_url" => 'avatar_url'})
         end
 
         it "should fetch the avatar" do
-          Net::HTTP.should_receive(:get).and_return({:profile_image_url => 'avatar_url'}.to_json)
+          Twitter.should_receive(:get).and_return({"profile_image_url" => 'avatar_url'})
 
           get '/awendt'
         end
 
         it "should not verify the new URL" do
-          @mock_http.should_not_receive(:request_head).with('avatar_url')
+          Twitter.should_not_receive(:head).with('avatar_url')
 
           get '/awendt'
         end
@@ -133,11 +130,11 @@ describe "Headhunter" do
 
       before do
         CACHE.stub!(:get).with('awendt').and_raise(Memcached::NotFound)
-        Net::HTTP.stub!(:get).and_return({:profile_image_url => 'avatar_url'}.to_json)
+        Twitter.stub!(:get).and_return({"profile_image_url" => 'avatar_url'})
       end
 
       it "should fetch avatar from Twitter" do
-        Net::HTTP.should_receive(:get).and_return({:profile_image_url => 'avatar_url'}.to_json)
+        Twitter.should_receive(:get).and_return({"profile_image_url" => 'avatar_url'})
 
         get '/awendt'
       end
@@ -156,7 +153,7 @@ describe "Headhunter" do
       end
 
       it "should not cache the default avatar" do
-        Net::HTTP.should_receive(:get).and_return({:profile_image_url => DEFAULT_AVATAR}.to_json)
+        Twitter.should_receive(:get).and_return({"profile_image_url" => DEFAULT_AVATAR})
         CACHE.should_not_receive(:set)
 
         get '/awendt'

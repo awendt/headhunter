@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'net/http'
 require 'json'
+require 'twitter'
 
 configure do
   require 'memcached'
@@ -12,14 +13,11 @@ DEFAULT_AVATAR = "http://static.twitter.com/images/default_profile_normal.png"
 
 helpers do
   def avatar_valid?(url)
-    uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host)
-    http.request_head(uri.path).code == "200"
+    Twitter.head(url).code == "200"
   end
 
   def grab_avatar_for(user)
-    user_info = Net::HTTP.get(URI.parse("http://twitter.com/users/#{user}.json"))
-    avatar_url = JSON.parse(user_info)["profile_image_url"]
+    avatar_url = Twitter.get("/users/#{user}.json")["profile_image_url"]
     avatar_url ||= DEFAULT_AVATAR
   end
 
@@ -54,8 +52,7 @@ end
 
 get '/' do
   cache_for 3*60
-  status_json = Net::HTTP.get(URI.parse("http://api.twitter.com/1/account/rate_limit_status.json"))
-  status = JSON.parse(status_json)
+  status = Twitter.get("/1/account/rate_limit_status.json")
   @remaining_hits = status['remaining_hits'].to_i
   @reset_to = status['hourly_limit']
   @reset_in_minutes = (status['reset_time_in_seconds'].to_i - Time.now.to_i)/60
