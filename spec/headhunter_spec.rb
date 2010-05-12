@@ -82,10 +82,10 @@ describe "Headhunter" do
           last_response.headers['Location'].should == 'cached_avatar_url'
         end
 
-        it "should instruct the client to cache for 5 minutes" do
+        it "should instruct the client to cache for 10 minutes" do
           get '/awendt'
 
-          last_response.headers['Cache-Control'].should =~ /max-age=300$/
+          last_response.headers['Cache-Control'].should =~ /max-age=600$/
         end
 
       end
@@ -116,10 +116,10 @@ describe "Headhunter" do
           last_response.headers['Location'].should == 'avatar_url'
         end
 
-        it "should instruct the client to cache for 5 minutes" do
+        it "should instruct the client to cache for 10 minutes" do
           get '/awendt'
 
-          last_response.headers['Cache-Control'].should =~ /max-age=300$/
+          last_response.headers['Cache-Control'].should =~ /max-age=600$/
         end
 
       end

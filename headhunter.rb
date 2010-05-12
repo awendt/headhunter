@@ -38,7 +38,7 @@ get '/favicon.ico' do
 end
 
 get '/:user' do
-  cache_for 5*60
+  cache_for 10*60
   user = params[:user]
   begin
     avatar_url = CACHE.get(user)
