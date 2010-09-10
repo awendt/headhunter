@@ -24,7 +24,7 @@ helpers do
   def google_chart
     ["http://chart.apis.google.com/chart?chs=400x250", "cht=gom", "chd=t:#{(@plot_value)}",
       "chco=FF0000,FF8040,FFFF00,00FF00,00FFFF,0000FF,800080", "chxt=x,y",
-      "chxl=0:||1:|low|normal|plenty"].join("&")
+      "chxl=0:||1:|low|normal|plenty"].join("&amp;")
   end
 
   def cache_for(time)
