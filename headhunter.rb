@@ -8,6 +8,8 @@ configure do
   CACHE = Memcached.new
 end
 
+set :views, './views'
+
 DEFAULT_AVATAR = "http://static.twitter.com/images/default_profile_normal.png"
 
 helpers do

@@ -1,3 +1,8 @@
+require 'rubygems'
+require 'bundler'
+
+Bundler.require(:default, :test)
+
 require 'headhunter'
 require 'spec'
 require 'rack/test'
@@ -58,7 +63,7 @@ describe "Headhunter" do
     describe 'having requested avatar in cache' do
 
       before do
-        CACHE.stub!(:get).with('awendt').and_return("cached_avatar_url")
+        CACHE.stub!(:get).with('awendt').and_return("http://cached_avatar.jpg")
         @mock_head_response = mock(HTTParty::Response)
         Twitter.stub!(:head).and_return(@mock_head_response)
       end
@@ -70,7 +75,8 @@ describe "Headhunter" do
         end
 
         it "should check the cached avatar with a HEAD request" do
-          Twitter.should_receive(:head).with('cached_avatar_url').and_return(@mock_head_response)
+          Twitter.should_receive(:head).with('http://cached_avatar.jpg').
+              and_return(@mock_head_response)
 
           get '/awendt'
         end
@@ -79,7 +85,7 @@ describe "Headhunter" do
           get '/awendt'
 
           last_response.should be_redirect
-          last_response.headers['Location'].should == 'cached_avatar_url'
+          last_response.headers['Location'].should == 'http://cached_avatar.jpg'
         end
 
         it "should instruct the client to cache for 10 minutes" do
@@ -94,17 +100,17 @@ describe "Headhunter" do
 
         before do
           @mock_head_response.should_receive(:code).and_return('404')
-          Twitter.stub!(:get).and_return({"profile_image_url" => 'avatar_url'})
+          Twitter.stub!(:get).and_return({"profile_image_url" => 'http://avatar.jpg'})
         end
 
         it "should fetch the avatar" do
-          Twitter.should_receive(:get).and_return({"profile_image_url" => 'avatar_url'})
+          Twitter.should_receive(:get).and_return({"profile_image_url" => 'http://avatar.jpg'})
 
           get '/awendt'
         end
 
         it "should not verify the new URL" do
-          Twitter.should_not_receive(:head).with('avatar_url')
+          Twitter.should_not_receive(:head).with('http://avatar.jpg')
 
           get '/awendt'
         end
@@ -113,7 +119,7 @@ describe "Headhunter" do
           get '/awendt'
 
           last_response.should be_redirect
-          last_response.headers['Location'].should == 'avatar_url'
+          last_response.headers['Location'].should == 'http://avatar.jpg'
         end
 
         it "should instruct the client to cache for 10 minutes" do
@@ -130,17 +136,17 @@ describe "Headhunter" do
 
       before do
         CACHE.stub!(:get).with('awendt').and_raise(Memcached::NotFound)
-        Twitter.stub!(:get).and_return({"profile_image_url" => 'avatar_url'})
+        Twitter.stub!(:get).and_return({"profile_image_url" => 'http://new_avatar.jpg'})
       end
 
       it "should fetch avatar from Twitter" do
-        Twitter.should_receive(:get).and_return({"profile_image_url" => 'avatar_url'})
+        Twitter.should_receive(:get).and_return({"profile_image_url" => 'http://new_avatar.jpg'})
 
         get '/awendt'
       end
 
       it "should cache the avatar" do
-        CACHE.should_receive(:set).with('awendt', 'avatar_url')
+        CACHE.should_receive(:set).with('awendt', 'http://new_avatar.jpg')
 
         get '/awendt'
       end
@@ -149,7 +155,7 @@ describe "Headhunter" do
         get '/awendt'
 
         last_response.should be_redirect
-        last_response.headers['Location'].should == 'avatar_url'
+        last_response.headers['Location'].should == 'http://new_avatar.jpg'
       end
 
       it "should not cache the default avatar" do
