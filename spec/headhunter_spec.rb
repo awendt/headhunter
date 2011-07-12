@@ -4,7 +4,6 @@ require 'bundler'
 Bundler.require(:default, :test)
 
 require 'headhunter'
-require 'spec'
 require 'rack/test'
 
 set :environment, :test

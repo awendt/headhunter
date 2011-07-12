@@ -1,10 +1,9 @@
 desc "Run those specs"
 task :spec do
-  require 'spec/rake/spectask'
+  require 'rspec/core/rake_task'
 
-  Spec::Rake::SpecTask.new do |t|
-    t.rcov = true
-    t.spec_files = FileList['spec/*_spec.rb']
+  RSpec::Core::RakeTask.new do |t|
+    t.pattern = 'spec/*_spec.rb'
   end
 end
 
