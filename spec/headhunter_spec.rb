@@ -70,7 +70,7 @@ describe "Headhunter" do
       describe "and it is not yet expired" do
 
         before do
-          @mock_head_response.should_receive(:code).and_return('200')
+          @mock_head_response.should_receive(:code).and_return(200)
         end
 
         it "should check the cached avatar with a HEAD request" do

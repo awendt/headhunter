@@ -4,6 +4,7 @@ gem 'json'
 gem 'httparty'
 gem 'memcached'
 gem 'newrelic_rpm'
+gem 'rake'
 
 group :test do
   gem "rspec"
