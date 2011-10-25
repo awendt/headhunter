@@ -10,7 +10,7 @@ end
 
 set :views, './views'
 
-DEFAULT_AVATAR = "http://static.twitter.com/images/default_profile_normal.png"
+DEFAULT_AVATAR = "http://a3.twimg.com/sticky/default_profile_images/default_profile_0_normal.png"
 
 helpers do
   def avatar_valid?(url)
