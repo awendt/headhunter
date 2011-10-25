@@ -14,7 +14,7 @@ DEFAULT_AVATAR = "http://a3.twimg.com/sticky/default_profile_images/default_prof
 
 helpers do
   def avatar_valid?(url)
-    Twitter.head(url).code == "200"
+    Twitter.head(url).code == 200
   end
 
   def grab_avatar_for(user)
