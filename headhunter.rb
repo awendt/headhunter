@@ -8,6 +8,10 @@ configure do
   CACHE = Memcached.new
 end
 
+configure :production do
+  require 'newrelic_rpm'
+end
+
 set :views, './views'
 
 DEFAULT_AVATAR = "http://a3.twimg.com/sticky/default_profile_images/default_profile_0_normal.png"

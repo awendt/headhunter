@@ -6,6 +6,7 @@ GEM
       crack (= 0.1.8)
     json (1.4.6)
     memcached (1.0.2)
+    newrelic_rpm (3.3.0)
     rack (1.2.1)
     rack-test (0.5.4)
       rack (>= 1.0)
@@ -20,6 +21,7 @@ DEPENDENCIES
   httparty
   json
   memcached
+  newrelic_rpm
   rack-test
   rspec
   sinatra (= 1.0)
