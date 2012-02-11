@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'net/http'
 require 'json'
-require 'twitter'
+require './twitter'
 require 'dalli'
 
 configure :production do
