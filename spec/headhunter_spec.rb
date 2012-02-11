@@ -15,11 +15,6 @@ describe "Headhunter" do
     Sinatra::Application
   end
 
-  before do
-    # ugly hack to suppress warnings about 'already initialized constant CACHE'
-    class Object ; remove_const :CACHE if const_defined?(:CACHE) ; end
-  end
-
   it "should not respond to /favicon.ico and cache for a week" do
     get '/favicon.ico'
     last_response.should be_not_found
@@ -56,13 +51,13 @@ describe "Headhunter" do
   describe "serving user avatars" do
 
     before do
-      CACHE = mock('Memcached').as_null_object
+      app.cache = mock(Dalli::Client, :get => nil, :set => nil)
     end
 
     describe 'having requested avatar in cache' do
 
       before do
-        CACHE.stub!(:get).with('awendt').and_return("http://cached_avatar.jpg")
+        app.cache.stub(:get).with('awendt').and_return("http://cached_avatar.jpg")
         @mock_head_response = mock(HTTParty::Response)
         Twitter.stub!(:head).and_return(@mock_head_response)
       end
@@ -134,7 +129,7 @@ describe "Headhunter" do
     describe 'without having requested avatar cached' do
 
       before do
-        CACHE.stub!(:get).with('awendt').and_raise(Memcached::NotFound)
+        app.cache.stub!(:get).with('awendt').and_return(nil)
         Twitter.stub!(:get).and_return({"profile_image_url" => 'http://new_avatar.jpg'})
       end
 
@@ -145,7 +140,7 @@ describe "Headhunter" do
       end
 
       it "should cache the avatar" do
-        CACHE.should_receive(:set).with('awendt', 'http://new_avatar.jpg')
+        app.cache.should_receive(:set).with('awendt', 'http://new_avatar.jpg')
 
         get '/awendt'
       end
@@ -159,7 +154,7 @@ describe "Headhunter" do
 
       it "should not cache the default avatar" do
         Twitter.should_receive(:get).and_return({"profile_image_url" => DEFAULT_AVATAR})
-        CACHE.should_not_receive(:set)
+        app.cache.should_not_receive(:set)
 
         get '/awendt'
       end

@@ -2,11 +2,11 @@ GEM
   remote: http://rubygems.org/
   specs:
     crack (0.1.8)
+    dalli (1.1.4)
     diff-lcs (1.1.2)
     httparty (0.6.1)
       crack (= 0.1.8)
     json (1.4.6)
-    memcached (1.2.7)
     newrelic_rpm (3.3.0)
     rack (1.2.1)
     rack-test (0.5.4)
@@ -27,9 +27,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dalli
   httparty
   json
-  memcached
   newrelic_rpm
   rack-test
   rake

@@ -2,16 +2,13 @@ require 'sinatra'
 require 'net/http'
 require 'json'
 require 'twitter'
-
-configure do
-  require 'memcached'
-  CACHE = Memcached.new
-end
+require 'dalli'
 
 configure :production do
   require 'newrelic_rpm'
 end
 
+set :cache, Dalli::Client.new
 set :views, './views'
 
 DEFAULT_AVATAR = "http://a3.twimg.com/sticky/default_profile_images/default_profile_0_normal.png"
@@ -45,12 +42,10 @@ end
 get '/:user' do
   cache_for 10*60
   user = params[:user]
-  begin
-    avatar_url = CACHE.get(user)
-    raise Memcached::NotFound unless avatar_valid?(avatar_url)
-  rescue Memcached::NotFound
+  avatar_url = settings.cache.get(user)
+  if avatar_url.nil? || !avatar_valid?(avatar_url)
     avatar_url = grab_avatar_for(user)
-    CACHE.set(user, avatar_url) unless avatar_url == DEFAULT_AVATAR
+    settings.cache.set(user, avatar_url) unless avatar_url == DEFAULT_AVATAR
   end
   redirect avatar_url
 end
