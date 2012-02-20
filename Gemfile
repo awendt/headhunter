@@ -1,5 +1,5 @@
-source :gemcutter
-gem 'sinatra', '1.0'
+source :rubygems
+gem 'sinatra'
 gem 'json'
 gem 'httparty'
 gem 'dalli'
